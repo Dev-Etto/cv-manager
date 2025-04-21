@@ -1,0 +1,22 @@
+type Person {
+  id: ID!
+  name: String!
+  age: Int!
+  email: String!
+}
+
+extend type Query {
+  Person: [Person!]!
+}
+
+# type CreatePersonInput {
+#   name: String!
+#   age: Int!
+#   email: String!
+# }
+
+# extend type Mutation {
+#   createPerson(input: CreatePersonInput!): Person!
+# }
+
+#  go run github.com/99designs/gqlgen
