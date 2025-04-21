@@ -1,0 +1,36 @@
+type BasicInfo {
+  id: ID!
+  # resumeId:ID!
+  firstName: String!
+  lastName: String!
+  AdditionalName: String
+  pronoun: String
+  headline: String
+}
+
+extend type Query {
+  basicInfo(id: ID!): BasicInfo!
+  basicInfos: [BasicInfo!]!
+}
+
+extend type Mutation {
+  createBasicInfo(input: CreateBasicInfoInput!): BasicInfo!
+  updateBasicInfo(id: ID!, input: UpdateBasicInfoInput): BasicInfo!
+  deleteBasicInfo(id: ID!): BasicInfo!
+}
+
+input CreateBasicInfoInput {
+  firstName: String!
+  lastName: String!
+  AdditionalName: String
+  pronoun: String
+  headline: String
+}
+
+input UpdateBasicInfoInput {
+  firstName: String
+  lastName: String
+  AdditionalName: String
+  pronoun: String
+  headline: String
+}
