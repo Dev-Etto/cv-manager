@@ -10,6 +10,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Dev-Etto/cv-manager/config"
+	"github.com/Dev-Etto/cv-manager/db"
 	"github.com/Dev-Etto/cv-manager/generated"
 	"github.com/Dev-Etto/cv-manager/resolvers"
 	"github.com/go-chi/chi"
@@ -26,6 +27,12 @@ func main() {
 		port = config.DEFAULT_PORT
 	}
 
+	db, err := db.New(env.DBName)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	router := chi.NewRouter()
 
 	router.Use(
@@ -36,7 +43,7 @@ func main() {
 		}),
 	)
 
-	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers.Resolver{}}))
+	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers.Resolver{DB: db}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})

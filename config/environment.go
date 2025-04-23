@@ -21,6 +21,7 @@ type EnviVar struct {
 
 type Environment struct {
 	DBUrl string `env:"DB_URL,required"`
+	DBName string `env:"DB_NAME,required"`
 	Port string `env:"PORT"`
 
 }
