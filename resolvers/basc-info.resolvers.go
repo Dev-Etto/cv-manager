@@ -8,13 +8,38 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/Dev-Etto/cv-manager/generated"
 	"github.com/Dev-Etto/cv-manager/model"
 )
 
+var collectionName = "basic-info"
+
 // CreateBasicInfo is the resolver for the createBasicInfo field.
 func (r *mutationResolver) CreateBasicInfo(ctx context.Context, input model.CreateBasicInfoInput) (*model.BasicInfo, error) {
-	panic(fmt.Errorf("not implemented: CreateBasicInfo - createBasicInfo"))
+	colletion := r.DB.Collection(collectionName)
+
+	newId := primitive.NewObjectID()
+
+	newBasicInfo := model.BasicInfo{
+		ID: newId.Hex(),
+		FirstName: input.FirstName,
+		LastName: input.LastName,
+		AdditionalName: input.AdditionalName,
+		Pronoun: input.Pronoun,
+		Headline: input.Headline,
+	}
+
+	_, err := colletion.InsertOne(ctx, newBasicInfo)
+
+	if err != nil {
+		return nil, err
+	}
+
+
+	return &newBasicInfo, nil
 }
 
 // UpdateBasicInfo is the resolver for the updateBasicInfo field.
@@ -34,7 +59,30 @@ func (r *queryResolver) BasicInfo(ctx context.Context, id string) (*model.BasicI
 
 // BasicInfos is the resolver for the basicInfos field.
 func (r *queryResolver) BasicInfos(ctx context.Context) ([]*model.BasicInfo, error) {
-	panic(fmt.Errorf("not implemented: BasicInfos - basicInfos"))
+	collection := r.DB.Collection(collectionName)
+
+	cursor, err := collection.Find(ctx, bson.M{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var bascInfos []*model.BasicInfo
+
+	for cursor.Next(ctx) {
+		var bascInfo model.BasicInfo
+		err := cursor.Decode(&bascInfo)
+
+		if err != nil {
+			return nil, err
+		}
+
+		bascInfos = append(bascInfos, &bascInfo)
+	}
+
+	return bascInfos, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
